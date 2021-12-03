@@ -1,0 +1,3 @@
+rootProject.name = 'adventofcode'
+include 'aoc'
+include '2021'
