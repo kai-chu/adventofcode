@@ -1,7 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DailyTasks {
@@ -165,14 +163,144 @@ public class DailyTasks {
         return c;
     }
 
+    static class Board {
+        int[] ele = new int[25]; // board
+        Map<Integer, Integer> index = new HashMap<>();
+        boolean[] marked = new boolean[25];
+        int sum = 0;
+        int last;
+        int currSum;
+
+        int row(int index) {
+            return index / 5;
+        }
+
+        int col(int index) {
+            return index % 5;
+        }
+
+        int index(int row, int col) {
+            return row * 5 + col;
+        }
+
+
+        public Board(String[] arr) {
+            int i = 0;
+            for (String line : arr) {
+                for (String e : line.trim().split("\\s+")) {
+                    Integer int_e = Integer.parseInt(e);
+                    ele[i] = int_e;
+                    index.put(int_e, i);
+                    sum += int_e;
+                    i++;
+                }
+            }
+            currSum = sum;
+        }
+
+        public boolean checkRow(int index) {
+            int row = row(index);
+            for (int col = 0; col < 5; col++) {
+                if (!marked[index(row, col)]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public boolean checkCol(int index) {
+            int col = col(index);
+            for (int row = 0; row < 5; row++) {
+                if (!marked[index(row, col)]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public boolean mark(int target) {
+            last = target;
+            Integer targetIndex = index.get(target);
+            if (targetIndex != null) {
+                if(!marked[targetIndex]) {
+                    currSum = currSum - target;
+                    marked[targetIndex] = true;
+                    if (checkRow(targetIndex)) {
+                        return true;
+                    }
+                    if (checkCol(targetIndex)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public int getResult() {
+            return last * currSum;
+        }
+
+        public void sum() {
+            int sum =0;
+            for(int i=0;i<25;i++) {
+                if(!marked[i]) {
+                    sum+= ele[i];
+                }
+            }
+            ConsoleUtil.println(sum);
+        }
+
+        public static List<Board> readBoards(String[] inputs) {
+            List<Board> boards = new ArrayList<>();
+
+            for (int i = 1; i < inputs.length; i += 6) {
+                String[] boardArr = new String[5];
+                for (int board = 1; board < 6; board++) {
+                    boardArr[board-1] = inputs[i + board];
+                }
+                boards.add(new Board(boardArr));
+            }
+            return boards;
+        }
+
+    }
+
     @Advent(day = Day.Day_4)
     public int day4Part1(String[] inputs) throws IOException {
+        int[] int_inputs = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+
+        List<Board> boards = Board.readBoards(inputs);
+
+        for (int e : int_inputs) {
+            for (Board board : boards) {
+                if (board.mark(e)) {
+                    return board.getResult();
+                }
+            }
+        }
+
         return 0;
     }
 
     @Advent(day = Day.Day_4, part = Part.two)
     public int day4Part2(String[] inputs) throws IOException {
-        return 0;
+        int[] int_inputs = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+
+        List<Board> boards = Board.readBoards(inputs);
+        Set<Board> wins = new HashSet<>();
+        Board lastWin = null;
+        for (int e : int_inputs) {
+            for (Board board : boards) {
+                if(!wins.contains(board)) {
+                    if (board.mark(e)) {
+                        wins.add(board);
+                        lastWin = board;
+                    }
+                }
+            }
+        }
+
+        return lastWin.getResult();
     }
 
     public static void main(String[] args) throws IOException {
