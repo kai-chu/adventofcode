@@ -303,6 +303,16 @@ public class DailyTasks {
         return lastWin.getResult();
     }
 
+    @Advent(day = Day.Day_5, part = Part.one)
+    public int day5Part1(String[] inputs) throws IOException {
+        return 0;
+    }
+
+    @Advent(day = Day.Day_5, part = Part.two)
+    public int day5Part2(String[] inputs) throws IOException {
+        return 0;
+    }
+
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
         platform.bootstrap(new DailyTasks());
