@@ -222,7 +222,7 @@ public class DailyTasks {
             last = target;
             Integer targetIndex = index.get(target);
             if (targetIndex != null) {
-                if(!marked[targetIndex]) {
+                if (!marked[targetIndex]) {
                     currSum = currSum - target;
                     marked[targetIndex] = true;
                     if (checkRow(targetIndex)) {
@@ -241,10 +241,10 @@ public class DailyTasks {
         }
 
         public void sum() {
-            int sum =0;
-            for(int i=0;i<25;i++) {
-                if(!marked[i]) {
-                    sum+= ele[i];
+            int sum = 0;
+            for (int i = 0; i < 25; i++) {
+                if (!marked[i]) {
+                    sum += ele[i];
                 }
             }
             ConsoleUtil.println(sum);
@@ -256,7 +256,7 @@ public class DailyTasks {
             for (int i = 1; i < inputs.length; i += 6) {
                 String[] boardArr = new String[5];
                 for (int board = 1; board < 6; board++) {
-                    boardArr[board-1] = inputs[i + board];
+                    boardArr[board - 1] = inputs[i + board];
                 }
                 boards.add(new Board(boardArr));
             }
@@ -291,7 +291,7 @@ public class DailyTasks {
         Board lastWin = null;
         for (int e : int_inputs) {
             for (Board board : boards) {
-                if(!wins.contains(board)) {
+                if (!wins.contains(board)) {
                     if (board.mark(e)) {
                         wins.add(board);
                         lastWin = board;
@@ -305,12 +305,88 @@ public class DailyTasks {
 
     @Advent(day = Day.Day_5, part = Part.one)
     public int day5Part1(String[] inputs) throws IOException {
-        return 0;
+        int[][] area = new int[1000][1000];
+        int count = 0;
+        for (String line : inputs) {
+            String[] cor = line.split("->");
+            int[] start = Arrays.stream(cor[0].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+            int[] end = Arrays.stream(cor[1].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+
+            if (start[0] == end[0]) {
+                int max = Math.max(start[1], end[1]);
+                int min = Math.min(start[1], end[1]);
+                for (int i = min; i <= max; i++) {
+                    area[start[0]][i]++;
+
+                    if (area[start[0]][i] == 2) {
+                        count++;
+                    }
+                }
+            } else if (start[1] == end[1]) {
+                int max = Math.max(start[0], end[0]);
+                int min = Math.min(start[0], end[0]);
+                for (int i = min; i <= max; i++) {
+                    area[i][start[1]]++;
+
+                    if (area[i][start[1]] == 2) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 
     @Advent(day = Day.Day_5, part = Part.two)
     public int day5Part2(String[] inputs) throws IOException {
-        return 0;
+        int[][] area = new int[1000][1000];
+        int count = 0;
+        for (String line : inputs) {
+            String[] cor = line.split("->");
+            int[] start = Arrays.stream(cor[0].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+            int[] end = Arrays.stream(cor[1].trim().split(",")).mapToInt(Integer::parseInt).toArray();
+
+            if (start[0] == end[0]) {
+                int max = Math.max(start[1], end[1]);
+                int min = Math.min(start[1], end[1]);
+                for (int i = min; i <= max; i++) {
+                    area[start[0]][i]++;
+
+                    if (area[start[0]][i] == 2) {
+                        count++;
+                    }
+                }
+            } else if (start[1] == end[1]) {
+                int max = Math.max(start[0], end[0]);
+                int min = Math.min(start[0], end[0]);
+                for (int i = min; i <= max; i++) {
+                    area[i][start[1]]++;
+
+                    if (area[i][start[1]] == 2) {
+                        count++;
+                    }
+                }
+            } else if (Math.abs(start[0] - end[0]) == Math.abs(start[1] - end[1])) {
+                int[] left = start[0] < end[0] ? start : end;
+                int[] right = start[0] > end[0] ? start : end;
+
+                for (int i = 0; i <= right[0] - left[0]; i++) {
+                    int col = 0;
+                    if (left[1] > right[1]) {
+                        col = left[1] - i;
+                    } else {
+                        col = left[1] + i;
+                    }
+                    area[i + left[0]][col]++;
+                    if (area[i + left[0]][col] == 2) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 
     public static void main(String[] args) throws IOException {
