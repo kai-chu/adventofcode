@@ -389,6 +389,42 @@ public class DailyTasks {
         return count;
     }
 
+
+    private long day6(String[] inputs, int days) {
+        long[] daysRemain = new long[9];
+        for (int i = 0; i < daysRemain.length; i++) daysRemain[i] = 0;
+
+        for (int e : Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray()) {
+            daysRemain[e]++;
+        }
+
+        while (days > 0) {
+            long preZeroDays = daysRemain[0];
+
+            for (int i = 1; i < daysRemain.length; i++) {
+                daysRemain[i - 1] = daysRemain[i];
+            }
+
+            daysRemain[6] += preZeroDays;
+            daysRemain[8] = preZeroDays;
+
+            days--;
+        }
+
+        return Arrays.stream(daysRemain).sum();
+    }
+
+    @Advent(day = Day.Day_6)
+    public long day6Part1(String[] inputs) throws IOException {
+        return day6(inputs, 80);
+    }
+
+
+    @Advent(day = Day.Day_6, part = Part.two)
+    public long day6Part2(String[] inputs) throws IOException {
+        return day6(inputs, 256);
+    }
+
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
         platform.bootstrap(new DailyTasks());
