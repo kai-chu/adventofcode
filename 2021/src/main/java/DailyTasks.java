@@ -425,6 +425,54 @@ public class DailyTasks {
         return day6(inputs, 256);
     }
 
+    @Advent(day = Day.Day_7)
+    public long day7Part1(String[] inputs) throws IOException {
+        // Brute force
+        int [] arr = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+        long min = Long.MAX_VALUE;
+        int max = 0;
+        for(int e: arr) {
+            if(e > max) {
+                max = e;
+            }
+        }
+        for(int step = 0; step <= max; step ++) {
+            long sum = 0;
+            for(int e: arr) {
+                sum += Math.abs(e - step);
+            }
+            if(sum < min) {
+                min = sum;
+            }
+        }
+        return min;
+    }
+
+
+    @Advent(day = Day.Day_7, part = Part.two)
+    public long day7Part2(String[] inputs) throws IOException {
+        int [] arr = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+
+        long min = Long.MAX_VALUE;
+        int max = 0;
+        for(int e: arr) {
+            if(e > max) {
+                max = e;
+            }
+        }
+        for(int step = 0; step <= max; step ++) {
+            long sum = 0;
+            for(int e: arr) {
+                long n = Math.abs(e - step);
+                sum += (n * (n + 1)) / 2;
+            }
+            if(sum < min) {
+                min = sum;
+            }
+        }
+        return min;
+    }
+
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
         platform.bootstrap(new DailyTasks());
