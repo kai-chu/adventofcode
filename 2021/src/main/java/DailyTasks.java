@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class DailyTasks {
@@ -425,52 +426,45 @@ public class DailyTasks {
         return day6(inputs, 256);
     }
 
-    @Advent(day = Day.Day_7)
-    public long day7Part1(String[] inputs) throws IOException {
+
+    private long day7Private(String[] inputs, BiFunction<Integer, Integer, Integer> cost) {
         // Brute force
-        int [] arr = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+        int[] arr = toInt(inputs[0].split(","));
         long min = Long.MAX_VALUE;
         int max = 0;
-        for(int e: arr) {
-            if(e > max) {
+        for (int e : arr) {
+            if (e > max) {
                 max = e;
             }
         }
-        for(int step = 0; step <= max; step ++) {
+        for (int location = 0; location <= max; location++) {
             long sum = 0;
-            for(int e: arr) {
-                sum += Math.abs(e - step);
+            for (int e : arr) {
+                sum += cost.apply(e, location);
             }
-            if(sum < min) {
+            if (sum < min) {
                 min = sum;
             }
         }
         return min;
     }
 
+    @Advent(day = Day.Day_7)
+    public long day7Part1(String[] inputs) throws IOException {
+        return day7Private(inputs, (e, location) -> Math.abs(e - location));
+    }
+
 
     @Advent(day = Day.Day_7, part = Part.two)
     public long day7Part2(String[] inputs) throws IOException {
-        int [] arr = Arrays.stream(inputs[0].split(",")).mapToInt(Integer::parseInt).toArray();
+        return day7Private(inputs, (e, location) -> {
+            int n = Math.abs(e - location);
+            return (n * (n + 1)) / 2;
+        });
+    }
 
-        long min = Long.MAX_VALUE;
-        int max = 0;
-        for(int e: arr) {
-            if(e > max) {
-                max = e;
-            }
-        }
-        for(int step = 0; step <= max; step ++) {
-            long sum = 0;
-            for(int e: arr) {
-                long n = Math.abs(e - step);
-                sum += (n * (n + 1)) / 2;
-            }
-            if(sum < min) {
-                min = sum;
-            }
-        }
-        return min;
+    private static int[] toInt(String[] arr) {
+        return Arrays.stream(arr).mapToInt(Integer::parseInt).toArray();
     }
 
     public static void main(String[] args) throws IOException {
