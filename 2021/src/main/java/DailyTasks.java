@@ -463,9 +463,168 @@ public class DailyTasks {
         });
     }
 
+
+
+    @Advent(day = Day.Day_8)
+    public long day8Part1(String[] inputs) throws IOException {
+        int unique = 0;
+        for (String line : inputs) {
+            String[] parts = line.split("\\|");
+            String[] part2 = parts[1].trim().split(" ");
+            for (String comb : part2) {
+                //4 4
+                //1 2
+                //8 7
+                //7 3
+                int len = comb.length();
+                if (len == 4 || len == 2 || len == 7 || len == 3) {
+                    unique++;
+                }
+            }
+        }
+        return unique;
+    }
+
+
+    private Set<Character> getSet(String comb) {
+        Set<Character> target =  new HashSet();
+        for(char c : comb.toCharArray()) {
+            target.add(c);
+        }
+        return target;
+    }
+
+    @Advent(day = Day.Day_8, part = Part.two)
+    public long day8Part2(String[] inputs) throws IOException {
+        HashMap<Integer, Set<Character>> bags = new HashMap<>();
+        long total = 0;
+        for (String line : inputs) {
+            String[] parts = line.split("\\|");
+            String[] part1 = parts[0].trim().split(" ");
+
+            Map<String, Integer> find = new HashMap<>();
+
+            for (String comb : part1) {
+                //4 4
+                //1 2
+                //8 7
+                //7 3
+                int len = comb.length();
+                if (len == 4) {
+                    bags.put(4, getSet(comb));
+                    find.put(comb, 4);
+                } else if (len == 2) {
+                    bags.put(1, getSet(comb));
+                    find.put(comb, 1);
+                } else if (len == 7) {
+                    bags.put(8, getSet(comb));
+                    find.put(comb, 8);
+                } else if (len == 3) {
+                    bags.put(7, getSet(comb));
+                    find.put(comb, 7);
+                }
+            }
+            Set<Character> fo = new HashSet();
+            fo.addAll(bags.get(4));
+            fo.removeAll(bags.get(1));
+
+            for (String comb : part1) {
+                if(!find.containsKey(comb)) {
+                    Set<Character> combSet = getSet(comb);
+                    if(combSet.containsAll(bags.get(1))) {
+                        if(comb.length() == 6) {
+                            if(combSet.containsAll(bags.get(4))) {
+                                bags.put(9, combSet);
+                                find.put(comb, 9);
+                            }else {
+                                bags.put(0, combSet);
+                                find.put(comb, 0);
+                            }
+                        }else {
+                            bags.put(3, combSet);
+                            find.put(comb, 3);
+                        }
+                    }else {
+                        if(comb.length() == 6) {
+                            bags.put(6, combSet);
+                            find.put(comb, 6);
+                        }else {
+                           if(combSet.containsAll(fo)) {
+                               bags.put(5, combSet);
+                               find.put(comb, 5);
+                           }else {
+                               bags.put(2, combSet);
+                               find.put(comb, 2);
+                           }
+
+                        }
+                    }
+                }
+            }
+
+            String[] part2 = parts[1].trim().split(" ");
+
+            int number = 0;
+            int b = 3;
+            Integer num = 0;
+            for(String comb: part2) {
+                int len = comb.length();
+                if (len == 4) {
+                    num = 4;
+                } else if (len == 2) {
+                    num=1;
+                } else if (len == 7) {
+                    num = 8;
+                } else if (len == 3) {
+                    num = 7;
+                }
+                else {
+                    Set<Character> combSet = getSet(comb);
+                    for(Map.Entry<Integer, ?> entry: bags.entrySet()) {
+                        if(combSet.equals(entry.getValue())) {
+                            num = entry.getKey();
+                        }
+                    }
+                }
+                System.out.print(num);
+                number += num * Math.pow(10, b);
+                b--;
+            }
+            System.out.println(" : " + number);
+
+            total += number;
+
+        }
+
+        //4 4
+        //1 2
+        //8 7
+        //7 3
+        //acedgfb: 8
+        /*cdfbe: 5
+        gcdfa: 2
+        fbcad: 3
+        //dab: 7
+        cefabd: 9
+        cdfgeb: 6
+        //eafb: 4
+        cagedb: 0*/
+        //ab: 1
+        return total;
+
+    }
+
     private static int[] toInt(String[] arr) {
         return Arrays.stream(arr).mapToInt(Integer::parseInt).toArray();
     }
+
+    private static void printArr(Object[] arr) {
+        Arrays.stream(arr).forEach(e -> {
+            System.out.print(e + ",");
+        });
+        System.out.println("");
+    }
+
 
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
