@@ -593,7 +593,6 @@ public class DailyTasks {
             System.out.println(" : " + number);
 
             total += number;
-
         }
 
         //4 4
@@ -612,6 +611,18 @@ public class DailyTasks {
         //ab: 1
         return total;
 
+    }
+
+    @Advent(day = Day.Day_9, part = Part.one)
+    public long day9Part1(String[] inputs) throws IOException {
+
+        return 0;
+    }
+
+    @Advent(day = Day.Day_9, part = Part.two)
+    public long day9Part2(String[] inputs) throws IOException {
+
+        return 0;
     }
 
     private static int[] toInt(String[] arr) {
