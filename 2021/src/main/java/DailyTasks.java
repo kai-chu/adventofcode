@@ -6,6 +6,18 @@ import java.util.stream.Collectors;
 public class DailyTasks {
     private static final AdventOfCode aoc2021 = AOCFactory.aoc2021;
 
+    private static int[] toInt(String[] arr) {
+        return Arrays.stream(arr).mapToInt(Integer::parseInt).toArray();
+    }
+
+    private static void printArr(Object[] arr) {
+        Arrays.stream(arr).forEach(e -> {
+            System.out.print(e + ",");
+        });
+        System.out.println("");
+    }
+
+
     @Advent(day = Day.Day_2)
     public int day2Part1(String[] inputs) throws IOException {
         int[] position = new int[]{0, 0};
@@ -464,7 +476,6 @@ public class DailyTasks {
     }
 
 
-
     @Advent(day = Day.Day_8)
     public long day8Part1(String[] inputs) throws IOException {
         int unique = 0;
@@ -487,8 +498,8 @@ public class DailyTasks {
 
 
     private Set<Character> getSet(String comb) {
-        Set<Character> target =  new HashSet();
-        for(char c : comb.toCharArray()) {
+        Set<Character> target = new HashSet();
+        for (char c : comb.toCharArray()) {
             target.add(c);
         }
         return target;
@@ -529,33 +540,33 @@ public class DailyTasks {
             fo.removeAll(bags.get(1));
 
             for (String comb : part1) {
-                if(!find.containsKey(comb)) {
+                if (!find.containsKey(comb)) {
                     Set<Character> combSet = getSet(comb);
-                    if(combSet.containsAll(bags.get(1))) {
-                        if(comb.length() == 6) {
-                            if(combSet.containsAll(bags.get(4))) {
+                    if (combSet.containsAll(bags.get(1))) {
+                        if (comb.length() == 6) {
+                            if (combSet.containsAll(bags.get(4))) {
                                 bags.put(9, combSet);
                                 find.put(comb, 9);
-                            }else {
+                            } else {
                                 bags.put(0, combSet);
                                 find.put(comb, 0);
                             }
-                        }else {
+                        } else {
                             bags.put(3, combSet);
                             find.put(comb, 3);
                         }
-                    }else {
-                        if(comb.length() == 6) {
+                    } else {
+                        if (comb.length() == 6) {
                             bags.put(6, combSet);
                             find.put(comb, 6);
-                        }else {
-                           if(combSet.containsAll(fo)) {
-                               bags.put(5, combSet);
-                               find.put(comb, 5);
-                           }else {
-                               bags.put(2, combSet);
-                               find.put(comb, 2);
-                           }
+                        } else {
+                            if (combSet.containsAll(fo)) {
+                                bags.put(5, combSet);
+                                find.put(comb, 5);
+                            } else {
+                                bags.put(2, combSet);
+                                find.put(comb, 2);
+                            }
 
                         }
                     }
@@ -567,21 +578,20 @@ public class DailyTasks {
             int number = 0;
             int b = 3;
             Integer num = 0;
-            for(String comb: part2) {
+            for (String comb : part2) {
                 int len = comb.length();
                 if (len == 4) {
                     num = 4;
                 } else if (len == 2) {
-                    num=1;
+                    num = 1;
                 } else if (len == 7) {
                     num = 8;
                 } else if (len == 3) {
                     num = 7;
-                }
-                else {
+                } else {
                     Set<Character> combSet = getSet(comb);
-                    for(Map.Entry<Integer, ?> entry: bags.entrySet()) {
-                        if(combSet.equals(entry.getValue())) {
+                    for (Map.Entry<Integer, ?> entry : bags.entrySet()) {
+                        if (combSet.equals(entry.getValue())) {
                             num = entry.getKey();
                         }
                     }
@@ -613,29 +623,100 @@ public class DailyTasks {
 
     }
 
+    private boolean checkAdj(char[][] map, int i, int j) {
+        if (i - 1 >= 0) {
+            if (map[i - 1][j] <= map[i][j]) return false;
+        }
+        if (i + 1 < map.length) {
+            if (map[i + 1][j] <= map[i][j]) return false;
+        }
+        if (j - 1 >= 0) {
+
+            if (map[i][j - 1] <= map[i][j]) return false;
+        }
+        if (j + 1 < map[0].length) {
+            if (map[i][j + 1] <= map[i][j]) return false;
+        }
+        return true;
+    }
+
     @Advent(day = Day.Day_9, part = Part.one)
     public long day9Part1(String[] inputs) throws IOException {
+        int r = 0;
+        int len = inputs[0].length();
+        int line = inputs.length;
+        char[][] map = new char[line][len];
+        for (int i = 0; i < inputs.length; i++) {
+            map[i] = inputs[i].toCharArray();
 
-        return 0;
+        }
+        for (int i = 0; i < line; i++) {
+            for (int j = 0; j < len; j++) {
+                if (checkAdj(map, i, j)) {
+                    r += (map[i][j] - 47);
+                }
+            }
+        }
+        return r;
+    }
+
+    private void basin(char[][] map, int i, int j, int[][] basin, int currentBasin,  Map<Integer, Integer>  basinBuckets) {
+        if (basin[i][j] != 0) {
+            return;
+        }
+
+        if (map[i][j] == 57) {
+            basin[i][j] = -1;
+            return;
+        }
+
+        basin[i][j] = 1;
+        basinBuckets.put(currentBasin, basinBuckets.getOrDefault(currentBasin, 0) + 1);
+
+        if (i - 1 >= 0) {
+            if (map[i - 1][j] > map[i][j])
+                basin(map, i - 1, j, basin, currentBasin, basinBuckets);
+        }
+        if (i + 1 < map.length) {
+            if (map[i + 1][j] > map[i][j])
+                basin(map, i + 1, j, basin, currentBasin, basinBuckets);
+        }
+        if (j - 1 >= 0) {
+            if (map[i][j - 1] > map[i][j])
+                basin(map, i, j - 1, basin, currentBasin, basinBuckets);
+        }
+        if (j + 1 < map[0].length) {
+            if (map[i][j + 1] > map[i][j])
+                basin(map, i, j + 1, basin, currentBasin, basinBuckets);
+        }
     }
 
     @Advent(day = Day.Day_9, part = Part.two)
     public long day9Part2(String[] inputs) throws IOException {
+        int len = inputs[0].length();
+        int line = inputs.length;
+        char[][] map = new char[line][len];
+        for (int i = 0; i < inputs.length; i++) {
+            map[i] = inputs[i].toCharArray();
 
-        return 0;
+        }
+        int[][] basin = new int[line][len];
+        Map<Integer, Integer> bucket = new HashMap<>();
+        int currentBasin = 1;
+        for (int i = 0; i < line; i++) {
+            for (int j = 0; j < len; j++) {
+                if (checkAdj(map, i, j)) {
+                    basin(map, i, j, basin, currentBasin, bucket);
+                    currentBasin++;
+                }
+            }
+        }
+
+        return bucket.entrySet().stream().sorted((o1, o2) -> {
+                if(o1.getValue() == o2.getValue()) return 0;
+                return o1.getValue() < o2.getValue() ? 1: -1 ;
+        }).limit(3).map(e-> e.getValue()).reduce(1,(a,b)-> a * b);
     }
-
-    private static int[] toInt(String[] arr) {
-        return Arrays.stream(arr).mapToInt(Integer::parseInt).toArray();
-    }
-
-    private static void printArr(Object[] arr) {
-        Arrays.stream(arr).forEach(e -> {
-            System.out.print(e + ",");
-        });
-        System.out.println("");
-    }
-
 
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
