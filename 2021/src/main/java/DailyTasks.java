@@ -660,7 +660,7 @@ public class DailyTasks {
         return r;
     }
 
-    private void basin(char[][] map, int i, int j, int[][] basin, int currentBasin,  Map<Integer, Integer>  basinBuckets) {
+    private void basin(char[][] map, int i, int j, int[][] basin, int currentBasin, Map<Integer, Integer> basinBuckets) {
         if (basin[i][j] != 0) {
             return;
         }
@@ -713,9 +713,106 @@ public class DailyTasks {
         }
 
         return bucket.entrySet().stream().sorted((o1, o2) -> {
-                if(o1.getValue() == o2.getValue()) return 0;
-                return o1.getValue() < o2.getValue() ? 1: -1 ;
-        }).limit(3).map(e-> e.getValue()).reduce(1,(a,b)-> a * b);
+            if (o1.getValue() == o2.getValue()) return 0;
+            return o1.getValue() < o2.getValue() ? 1 : -1;
+        }).limit(3).map(e -> e.getValue()).reduce(1, (a, b) -> a * b);
+    }
+
+
+    @Advent(day = Day.Day_10)
+    public long day10Part1(String[] inputs) throws IOException {
+        long r = 0;
+        Map<Character, Integer> illegal = new HashMap<>();
+        illegal.put(')', 3);
+        illegal.put(']', 57);
+        illegal.put('}', 1197);
+        illegal.put('>', 25137);
+
+        Map<Character, Character> pairs = new HashMap<>();
+        pairs.put('(', ')');
+        pairs.put('{', '}');
+        pairs.put('<', '>');
+        pairs.put('[', ']');
+
+        Stack<Character> stack = new Stack<>();
+        for (String line : inputs) {
+            for (char c : line.toCharArray()) {
+                if (pairs.containsKey(c)) {
+                    stack.push(c);
+                } else {
+                    Character top = stack.peek();
+                    if (pairs.get(top) != c) {
+                        r += illegal.get(c);
+                        break;
+                    } else
+                        stack.pop();
+                }
+            }
+        }
+        return r;
+    }
+
+    @Advent(day = Day.Day_10, part = Part.two)
+    public long day10Part2(String[] inputs) throws IOException {
+
+        Map<Character, Integer> illegal = new HashMap<>();
+        illegal.put(')', 3);
+        illegal.put(']', 57);
+        illegal.put('}', 1197);
+        illegal.put('>', 25137);
+
+        Map<Character, Character> pairs = new HashMap<>();
+        pairs.put('(', ')');
+        pairs.put('{', '}');
+        pairs.put('<', '>');
+        pairs.put('[', ']');
+
+        List<Long> score = new ArrayList<>();
+
+        for (String line : inputs) {
+            Stack<Character> stack = new Stack<>();
+
+            boolean ok = true;
+            for (char c : line.toCharArray()) {
+                if (pairs.containsKey(c)) {
+                    stack.push(c);
+                } else {
+                    Character top = stack.peek();
+                    if (pairs.get(top) != c) {
+                        ok = false;
+                        break;
+                    } else
+                        stack.pop();
+                }
+            }
+
+            if (ok) {
+                long r = 0;
+
+                while (!stack.isEmpty()) {
+                    Character top = stack.pop();
+                    switch (top) {
+                        case '[':
+                            r = r * 5 + 2;
+                            break;
+                        case '{':
+                            r = r * 5 + 3;
+                            break;
+                        case '(':
+                            r = r * 5 + 1;
+                            break;
+                        case '<':
+                            r = r * 5 + 4;
+                            break;
+                    }
+                }
+                score.add(r);
+            }
+
+        }
+        Collections.sort(score);
+        long k = score.get(score.size() / 2);
+        return k;
     }
 
     public static void main(String[] args) throws IOException {
