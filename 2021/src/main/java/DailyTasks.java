@@ -815,6 +815,123 @@ public class DailyTasks {
         return k;
     }
 
+    private void fill(int[][] matrix, String[] inputs) {
+        for (int i=0;i<inputs.length;i++) {
+            matrix[i] = new int[inputs[0].length()];
+            int j = 0;
+            for (char c : inputs[i].toCharArray()) {
+                matrix[i][j] = c - 48;
+                j++;
+            }
+        }
+    }
+
+    @Advent(day = Day.Day_11, part = Part.one)
+    public long day11Part1(String[] inputs) throws IOException {
+        int[][] matrix = new int[10][10];
+        fill(matrix, inputs);
+
+        int count = 0;
+        final int STEP_NUM = 100;
+        for (int step = 1; step <= STEP_NUM; step++) {
+            Queue<Map.Entry<Integer, Integer>> flashes = new LinkedList<>();
+            boolean[][] flashed = new boolean[10][10];
+
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    matrix[i][j]++;
+                    if (matrix[i][j] > 9) {
+                        flashes.offer(new AbstractMap.SimpleEntry<>(i, j));
+                    }
+                }
+            }
+
+            int countStep = 0;
+            while (!flashes.isEmpty()) {
+                Map.Entry<Integer, Integer> e = flashes.poll();
+                //flash(matrix, e.getKey(), e.getValue());
+                int i = e.getKey(), j = e.getValue();
+                if(flashed[i][j]) continue;
+
+                matrix[i][j] = 0;
+                flashed[i][j] = true;
+                countStep++;
+
+                int[] X = new int[]{1, 0, -1};
+
+                for (int x : X) {
+                    for (int y : X) {
+                        if (x == 0 && y == 0) continue;
+
+                        int adj_i = i + x, adj_y = j + y;
+                        if (adj_i >= 0 && adj_i < 10 && adj_y >= 0 && adj_y < 10) {
+                            if(flashed[adj_i][adj_y]) continue;
+                            matrix[adj_i][adj_y]++;
+                            if (matrix[adj_i][adj_y] > 9) {
+                                flashes.offer(new AbstractMap.SimpleEntry<>(adj_i, adj_y));
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            count += countStep;
+        }
+        return count;
+    }
+
+    @Advent(day = Day.Day_11, part = Part.two)
+    public long day11Part2(String[] inputs) throws IOException {
+        int[][] matrix = new int[10][10];
+        fill(matrix, inputs);
+
+        for (int step = 1;; step++) {
+            Queue<Map.Entry<Integer, Integer>> flashes = new LinkedList<>();
+            boolean[][] flashed = new boolean[10][10];
+
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    matrix[i][j]++;
+                    if (matrix[i][j] > 9) {
+                        flashes.offer(new AbstractMap.SimpleEntry<>(i, j));
+                    }
+                }
+            }
+
+            int countStep = 0;
+            while (!flashes.isEmpty()) {
+                Map.Entry<Integer, Integer> e = flashes.poll();
+                //flash(matrix, e.getKey(), e.getValue());
+                int i = e.getKey(), j = e.getValue();
+                if(flashed[i][j]) continue;
+
+                matrix[i][j] = 0;
+                flashed[i][j] = true;
+                countStep++;
+
+                int[] X = new int[]{1, 0, -1};
+
+                for (int x : X) {
+                    for (int y : X) {
+                        if (x == 0 && y == 0) continue;
+
+                        int adj_i = i + x, adj_y = j + y;
+                        if (adj_i >= 0 && adj_i < 10 && adj_y >= 0 && adj_y < 10) {
+                            if(flashed[adj_i][adj_y]) continue;
+                            matrix[adj_i][adj_y]++;
+                            if (matrix[adj_i][adj_y] > 9) {
+                                flashes.offer(new AbstractMap.SimpleEntry<>(adj_i, adj_y));
+                            }
+                        }
+                    }
+                }
+
+            }
+            if(countStep == 100) return step;
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         final Platform platform = new Platform();
         platform.bootstrap(new DailyTasks());
