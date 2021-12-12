@@ -13,3 +13,21 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation project(":aoc")
 }
+
+tasks.register("newDay") {
+    doLast {
+        def default_day = 12;
+        def day = day ? day : default_day;
+        def day_num = "Day_${day}"
+        [day_num.toLowerCase(), "${day_num.toLowerCase()}-test"].each {
+            File testFile = file("src/main/resources/${it}.txt")
+            println testFile
+            testFile.createNewFile()
+        }
+
+        def newDayTask = file("src/scripts/Task.java.template").getText().replace("Day_Template", day_num)
+        def taskFile = file("src/main/java/${day_num}Tasks.java")
+        //taskFile.createNewFile()
+        taskFile.text = newDayTask
+    }
+}
