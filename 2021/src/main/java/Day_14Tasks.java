@@ -29,7 +29,7 @@ public class Day_14Tasks {
 
     }
 
-    //@Advent(day = Day.Day_14, part = Part.one)
+    @Advent(day = Day.Day_14, part = Part.one)
     public int Day_14Part1(String[] inputs) throws IOException {
         Node head = new Node();
         Node curr = head;
